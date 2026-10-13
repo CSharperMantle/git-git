@@ -2247,6 +2247,8 @@ static void add_options_to_argv(struct strvec *argv,
 		strvec_push(argv, "--tags");
 	else if (tags == TAGS_UNSET)
 		strvec_push(argv, "--no-tags");
+	if (deepen)
+		strvec_pushf(argv, "--depth=%s", depth);
 	if (verbosity >= 2)
 		strvec_push(argv, "-v");
 	if (verbosity >= 1)

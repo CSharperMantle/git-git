@@ -383,4 +383,38 @@ test_expect_success 'git fetch --no-all --all (fetch all remotes)' '
 	)
 '
 
+test_expect_success 'git fetch --all --depth=2 (fetch all remotes with depth 2)' '
+	setup_repository test16 &&
+	git clone --no-local --no-single-branch --depth=1 test16 test17 &&
+	(
+		cd test17 &&
+		git remote add remote2 ../test16 &&
+		test_path_is_file .git/shallow &&
+		git fetch --all --depth=2 &&
+		test_path_is_missing .git/shallow &&
+		git log --format=%s origin/side >actual1 &&
+		git log --format=%s remote2/side >actual2 &&
+		test_write_lines Second Initial >expect &&
+		test_cmp expect actual1 &&
+		test_cmp expect actual2
+	)
+'
+
+test_expect_success 'git fetch --all --unshallow (fetch all remotes with full history)' '
+	setup_repository test18 &&
+	git clone --no-local --no-single-branch --depth=1 test18 test19 &&
+	(
+		cd test19 &&
+		git remote add remote2 ../test18 &&
+		test_path_is_file .git/shallow &&
+		git fetch --all --unshallow &&
+		test_path_is_missing .git/shallow &&
+		git log --format=%s origin/side >actual1 &&
+		git log --format=%s remote2/side >actual2 &&
+		test_write_lines Second Initial >expect &&
+		test_cmp expect actual1 &&
+		test_cmp expect actual2
+	)
+'
+
 test_done
